@@ -1,5 +1,5 @@
 /**
- * Observed.hpp
+ * @file Observed.hpp
  *
  * Early optimization is the root of all evil
  *
@@ -14,12 +14,28 @@
 
 #include <vector>
 
-template<class MessageName, class Content>
+/**
+ * @class Observed
+ * @tparam EventName is the type for the event names
+ * @tparam Content is the type for the event's content
+ *
+ * @brief  it's the Observed of the Observer pattern
+ * this class is a attempt to send event to #Observed subscribed to it
+ */
+template<class EventName, class Content>
 class Observed
 {
 //========================>Attributes<========================
 private:
-  std::vector<Observer<MessageName, Content> const*> observers;
+  /**
+   * @brief the list of observers subscribed to this #Observed
+   */
+  std::vector<Observer<EventName, Content> const*> observers;
+
+  /**
+   * @brief the state of this #Observed
+   * if it's going to send an event or not
+   */
   bool changed;
 //=======================>Constructors<=======================
 public:
@@ -31,21 +47,58 @@ private:
 
 //=========================>Methods<==========================
 public:
-  void addObserver(Observer<MessageName, Content>* observer);
-  void deleteObserver(Observer<MessageName, Content>* observer);
+  /**
+   *
+   * @param observer the observer to add to the #observers subsciption list
+   */
+  void addObserver(Observer<EventName, Content> const* observer);
+
+  /**
+   * delete the specified #Observer from the subscribe list #observers
+   * @param observer the #Observer to delete
+   */
+  void deleteObserver(Observer<EventName, Content> const* observer);
+
+  /**
+   * delete all observers for this #Observed object
+   */
   void deleteObservers();
 
+  /**
+   * @return the number of subscribed Observers
+   */
   int countObservers() const;
 protected:
-  void notifyObserver(MessageName messageName, Content content);
+  /**
+   *
+   * @param eventName the event name which will called associated eventAction
+   * @param content the content of the event
+   */
+  void notifyObserver(EventName eventName, Content content);
 private:
 
 //=====================>Getters&Setters<======================
 public:
+  /**
+   * @brief getter for changed
+   * @return the state of this #Observed
+   */
   bool hasChanged() const;
 
 protected:
+  /**
+   * @brief setter for changed (set)
+   *
+   * to activate notifications to Observers
+   */
   void setChanged();
+
+  /**
+   * @brief setter for changed (unset)
+   *
+   * to desactivate notifications to #Observer<br>
+   * notifyObserver(EventName eventName, Content content) won't work
+   */
   void clearChanged();
 private:
 

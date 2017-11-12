@@ -1,10 +1,10 @@
 /**
- * Observer.cpp
+ * @file Observer.cpp
  *
  * Early optimization is the root of all evil
  *
- *  Created on: 11 nov. 2017
- *      Author: nihil
+ *  @date 11 nov. 2017
+ *  @author nihil
  */
 #ifdef OBSERVER_HPP
 #include <iostream>
@@ -21,19 +21,19 @@
 //------------------------------------------------------------
 //=========================>Methods<==========================
 //------------------------------------------------------------
-template<class MessageName, class Content>
-void Observer<MessageName, Content>::addAction(MessageName event,
-    actionMethod<MessageName, Content> method)
+template<class EventName, class Content>
+void Observer<EventName, Content>::addAction(EventName eventName,
+    actionMethod<EventName, Content> method)
 {
-  actions.insert(std::make_pair(event, method));
+  actions.insert(std::make_pair(eventName, method));
 }
 
-template<class MessageName, class Content>
-void Observer<MessageName, Content>::event(MessageName messageName, Content content,
-    Observed<MessageName, Content> const& observed) const
+template<class EventName, class Content>
+void Observer<EventName, Content>::doEventActions(EventName eventName, Content content,
+    Observed<EventName, Content> const& observed) const
 {
   using namespace std;
-  auto actionsForEvent = actions.equal_range(messageName);
+  auto actionsForEvent = actions.equal_range(eventName);
   for (auto i = actionsForEvent.first; i != actionsForEvent.second; ++i)
   {
     i->second(content, observed);

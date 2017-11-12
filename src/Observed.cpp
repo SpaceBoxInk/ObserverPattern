@@ -1,5 +1,5 @@
 /**
- * Observed.cpp
+ * @file Observed.cpp
  *
  * Early optimization is the root of all evil
  *
@@ -15,8 +15,8 @@
 //------------------------------------------------------------
 //=======================>Constructors<=======================
 //------------------------------------------------------------
-template<class MessageName, class Content>
-Observed<MessageName, Content>::Observed(): changed(false)
+template<class EventName, class Content>
+Observed<EventName, Content>::Observed(): changed(false)
 {
 }
 
@@ -24,47 +24,41 @@ Observed<MessageName, Content>::Observed(): changed(false)
 //=========================>Methods<==========================
 //------------------------------------------------------------
 
-template<class MessageName, class Content>
-inline void Observed<MessageName, Content>::addObserver(
-    Observer<MessageName, Content>* observer)
+template<class EventName, class Content>
+inline void Observed<EventName, Content>::addObserver(
+    Observer<EventName, Content> const* observer)
 {
   observers.push_back(observer);
 }
 
-template<class MessageName, class Content>
-inline void Observed<MessageName, Content>::deleteObserver(
-    Observer<MessageName, Content>* observer)
+template<class EventName, class Content>
+inline void Observed<EventName, Content>::deleteObserver(
+    Observer<EventName, Content> const* observer)
 {
   observers.erase(std::find(observers.begin(), observers.end(), observer));
 }
 
-/**
- * delete all observers for this Observed object
- */
-template<class MessageName, class Content>
-void Observed<MessageName, Content>::deleteObservers()
+template<class EventName, class Content>
+void Observed<EventName, Content>::deleteObservers()
 {
   observers.clear();
 }
 
-/**
- * @return the number of subscribed Observers
- */
-template<class MessageName, class Content>
-inline int Observed<MessageName, Content>::countObservers() const
+template<class EventName, class Content>
+inline int Observed<EventName, Content>::countObservers() const
 {
   return observers.size();
 }
 
-template<class MessageName, class Content>
-inline void Observed<MessageName, Content>::notifyObserver(MessageName messageName,
+template<class EventName, class Content>
+inline void Observed<EventName, Content>::notifyObserver(EventName eventName,
     Content content)
 {
   if (hasChanged())
   {
-    for(Observer<MessageName, Content>const* obs : observers)
+    for(Observer<EventName, Content>const* obs : observers)
     {
-      obs->event(messageName, content, *this);
+      obs->doEventActions(eventName, content, *this);
     }
   }
   clearChanged();
@@ -73,20 +67,21 @@ inline void Observed<MessageName, Content>::notifyObserver(MessageName messageNa
 //------------------------------------------------------------
 //=====================>Getters&Setters<======================
 //------------------------------------------------------------
-template<class MessageName, class Content>
-inline bool Observed<MessageName, Content>::hasChanged() const
+
+template<class EventName, class Content>
+inline bool Observed<EventName, Content>::hasChanged() const
 {
   return changed;
 }
 
-template<class MessageName, class Content>
-inline void Observed<MessageName, Content>::setChanged()
+template<class EventName, class Content>
+inline void Observed<EventName, Content>::setChanged()
 {
   changed=true;
 }
 
-template<class MessageName, class Content>
-inline void Observed<MessageName, Content>::clearChanged()
+template<class EventName, class Content>
+inline void Observed<EventName, Content>::clearChanged()
 {
   changed=false;
 }

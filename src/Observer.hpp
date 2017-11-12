@@ -1,5 +1,5 @@
 /**
- * Observer.hpp
+ * @file Observer.hpp
  *
  * Early optimization is the root of all evil
  *
@@ -13,21 +13,43 @@
 #include <map>
 #include <functional>
 
-template<class MessageName, class Content>
+template<class EventName, class Content>
 class Observed;
 
 /**
- * alias for event function signature
+ * @brief alias for event function signature <br>
+ * @code void(Content const&, Observed<Content, EventName> const&) @endcode
+ *
+ * with lambda :
+ * @code
+ * auto action1 = [](Content const& content, Observed<Content, EventName> const& Obs)
+ * {
+ *  std::cout << content;
+ * };
+ * @endcode
  */
-template<class MessageName, class Content>
-using actionMethod = std::function<void(Content const&, Observed<Content, MessageName> const&)>;
+template<class EventName, class Content>
+using actionMethod = std::function<void(Content const&, Observed<Content, EventName> const&)>;
 
-template<class MessageName, class Content>
+/**
+ * @class Observer
+ * @brief it's the Observer of the Observer pattern
+ * this class is a attempt to recieve event from #Observed by subscription system
+ *
+ * @tparam EventName is the type for the event names
+ * @tparam Content is the type for the event's content
+ *
+ * @see Observed::addObserver(Observer<EventName, Content> const* observer)
+ */
+template<class EventName, class Content>
 class Observer
 {
 //========================>Attributes<========================
 private:
-  std::multimap<MessageName, actionMethod<Content, MessageName>> actions;
+  /**
+   * @brief the list of actions handle by event name
+   */
+  std::multimap<EventName, actionMethod<Content, EventName>> actions;
 //=======================>Constructors<=======================
 public:
   Observer() = default;
@@ -38,10 +60,24 @@ private:
 
 //=========================>Methods<==========================
 public:
-  void addAction(MessageName event, actionMethod<MessageName, Content> method);
+  /**
+   *
+   * @param eventName the name of this action which is called when an event of the same name is send
+   * @param method the event behavior, the method/lambda defined for a specific event
+   * @see Observed::notifyObserver(EventName eventName, Content content)
+   */
+  void addAction(EventName eventName, actionMethod<EventName, Content> method);
 
-  void event(MessageName messageName, Content content,
-             Observed<MessageName, Content> const& observed) const;
+  /**
+   * @brief method called by the #Observed when an event is send
+   *
+   * @param eventName the name for the event
+   * @param content the content message of the event
+   * @param observed the source of the event
+   * @note do not call this method, it's called automatically by #Observed
+   */
+  void doEventActions(EventName eventName, Content content,
+             Observed<EventName, Content> const& observed) const;
 private:
 
 //=====================>Getters&Setters<======================
