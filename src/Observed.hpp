@@ -10,7 +10,6 @@
 #ifndef OBSERVED_HPP
 #define OBSERVED_HPP
 
-
 #include "Observer.hpp"
 
 #include <vector>
@@ -20,26 +19,34 @@ class Observed
 {
 //========================>Attributes<========================
 private:
-  std::vector<Observer<MessageName, Content>*> observers;
+  std::vector<Observer<MessageName, Content> const*> observers;
+  bool changed;
 //=======================>Constructors<=======================
 public:
   Observed();
   // TODO: rule of five ? copyandswap
-  virtual ~Observed();
+  virtual ~Observed() = default;
 
 private:
 
 //=========================>Methods<==========================
 public:
   void addObserver(Observer<MessageName, Content>* observer);
+  void deleteObserver(Observer<MessageName, Content>* observer);
+  void deleteObservers();
 
+  int countObservers() const;
 protected:
   void notifyObserver(MessageName messageName, Content content);
 private:
 
-  //=====================>Getters&Setters<======================
+//=====================>Getters&Setters<======================
 public:
+  bool hasChanged() const;
 
+protected:
+  void setChanged();
+  void clearChanged();
 private:
 
 };

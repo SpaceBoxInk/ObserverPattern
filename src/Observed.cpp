@@ -16,13 +16,10 @@
 //=======================>Constructors<=======================
 //------------------------------------------------------------
 template<class MessageName, class Content>
-Observed<MessageName, Content>::Observed()
+Observed<MessageName, Content>::Observed(): changed(false)
 {
 }
-template<class MessageName, class Content>
-Observed<MessageName, Content>::~Observed()
-{
-}
+
 //------------------------------------------------------------
 //=========================>Methods<==========================
 //------------------------------------------------------------
@@ -35,16 +32,62 @@ inline void Observed<MessageName, Content>::addObserver(
 }
 
 template<class MessageName, class Content>
+inline void Observed<MessageName, Content>::deleteObserver(
+    Observer<MessageName, Content>* observer)
+{
+  observers.erase(std::find(observers.begin(), observers.end(), observer));
+}
+
+/**
+ * delete all observers for this Observed object
+ */
+template<class MessageName, class Content>
+void Observed<MessageName, Content>::deleteObservers()
+{
+  observers.clear();
+}
+
+/**
+ * @return the number of subscribed Observers
+ */
+template<class MessageName, class Content>
+inline int Observed<MessageName, Content>::countObservers() const
+{
+  return observers.size();
+}
+
+template<class MessageName, class Content>
 inline void Observed<MessageName, Content>::notifyObserver(MessageName messageName,
     Content content)
 {
-  for(Observer<MessageName, Content>* obs : observers)
+  if (hasChanged())
   {
-    obs->event(messageName, content, *this);
+    for(Observer<MessageName, Content>const* obs : observers)
+    {
+      obs->event(messageName, content, *this);
+    }
   }
+  clearChanged();
 }
 
 //------------------------------------------------------------
 //=====================>Getters&Setters<======================
 //------------------------------------------------------------
+template<class MessageName, class Content>
+inline bool Observed<MessageName, Content>::hasChanged() const
+{
+  return changed;
+}
+
+template<class MessageName, class Content>
+inline void Observed<MessageName, Content>::setChanged()
+{
+  changed=true;
+}
+
+template<class MessageName, class Content>
+inline void Observed<MessageName, Content>::clearChanged()
+{
+  changed=false;
+}
 #endif

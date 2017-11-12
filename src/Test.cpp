@@ -15,7 +15,8 @@ public:
   {
     cout << "IHM stuff and waiting for input :" << endl;
     string key;
-    cin >> key;
+    std::getline(cin, key);
+    setChanged();
     notifyObserver("Test", key);
   }
 };
@@ -31,14 +32,12 @@ public:
       vTest(), t(2)
   {
     vTest.addObserver(this);
-    addAction("Test", [this](string& content, Observed<string, string>& observed) -> void
+    addAction("Test",
+        [](string const& content, Observed<string, string> const& observed) -> void
     {
-      cout << content << ", print t : " << t << " Worked !"<<endl;
-      ++t;
-      cout<<"t is now : "<<t<<endl;
+          cout << "Message : " << content << " Message from object : "<< typeid(observed).name() << " recieved !" <<endl;
     });
     vTest.show();
-    cout << "t equal : " << t;
   }
 
 };

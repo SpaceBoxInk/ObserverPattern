@@ -17,10 +17,10 @@ template<class MessageName, class Content>
 class Observed;
 
 /**
- * alias for function signature of
+ * alias for event function signature
  */
 template<class MessageName, class Content>
-using actionMethod = std::function<void(Content&, Observed<Content, MessageName>&)>;
+using actionMethod = std::function<void(Content const&, Observed<Content, MessageName> const&)>;
 
 template<class MessageName, class Content>
 class Observer
@@ -30,27 +30,26 @@ private:
   std::multimap<MessageName, actionMethod<Content, MessageName>> actions;
 //=======================>Constructors<=======================
 public:
-  Observer();
+  Observer() = default;
   // TODO: rule of five ? copyandswap
-  virtual ~Observer();
+  virtual ~Observer() = default;
 
 private:
 
-  //=========================>Methods<==========================
+//=========================>Methods<==========================
 public:
   void addAction(MessageName event, actionMethod<MessageName, Content> method);
 
   void event(MessageName messageName, Content content,
-             Observed<MessageName, Content>& observed);
+             Observed<MessageName, Content> const& observed) const;
 private:
 
-  //=====================>Getters&Setters<======================
+//=====================>Getters&Setters<======================
 public:
 
 private:
 
 };
-
 
 #include "Observer.cpp"
 #endif

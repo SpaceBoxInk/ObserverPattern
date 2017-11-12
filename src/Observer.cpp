@@ -17,15 +17,6 @@
 //------------------------------------------------------------
 //=======================>Constructors<=======================
 //------------------------------------------------------------
-template<class MessageName, class Content>
-Observer<MessageName, Content>::Observer()
-{
-}
-
-template<class MessageName, class Content>
-Observer<MessageName, Content>::~Observer()
-{
-}
 
 //------------------------------------------------------------
 //=========================>Methods<==========================
@@ -38,8 +29,8 @@ void Observer<MessageName, Content>::addAction(MessageName event,
 }
 
 template<class MessageName, class Content>
-inline void Observer<MessageName, Content>::event(MessageName messageName, Content content,
-    Observed<MessageName, Content>& observed)
+void Observer<MessageName, Content>::event(MessageName messageName, Content content,
+    Observed<MessageName, Content> const& observed) const
 {
   using namespace std;
   auto actionsForEvent = actions.equal_range(messageName);

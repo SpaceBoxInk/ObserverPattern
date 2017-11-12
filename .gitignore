@@ -10,3 +10,5 @@
 !/**/*/
 !/**/*.mk
 !/**/makefile
+/Debug/
+/Release/
