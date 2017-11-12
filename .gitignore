@@ -2,6 +2,8 @@
 /.cproject
 /.project
 /.settings/*
+/doxygen/*/*
+/doxygen/*/*/*
 
 /Debug/*
 /Release/*
