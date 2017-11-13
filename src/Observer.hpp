@@ -13,7 +13,6 @@
 #include <map>
 #include <functional>
 
-template<class EventName, class Content>
 class Observed;
 
 /**
@@ -28,8 +27,8 @@ class Observed;
  * };
  * @endcode
  */
-template<class EventName, class Content>
-using actionMethod = std::function<void(Content const&, Observed<Content, EventName> const&)>;
+template<class Content>
+using actionMethod = std::function<void(Content const&, Observed const&)>;
 
 /**
  * @class Observer
@@ -41,7 +40,6 @@ using actionMethod = std::function<void(Content const&, Observed<Content, EventN
  *
  * @see Observed::addObserver(Observer<EventName, Content> const* observer)
  */
-template<class EventName, class Content>
 class Observer
 {
 //========================>Attributes<========================
@@ -49,10 +47,12 @@ private:
   /**
    * @brief the list of actions handle by event name
    */
-  std::multimap<EventName, actionMethod<Content, EventName>> actions;
+  std::multimap actions;
 //=======================>Constructors<=======================
 public:
-  Observer() = default;
+
+  template<class EventName, class Content>
+  Observer();
   // TODO: rule of five ? copyandswap
   virtual ~Observer() = default;
 
@@ -66,7 +66,8 @@ public:
    * @param method the event behavior, the method/lambda defined for a specific event
    * @see Observed::notifyObserver(EventName eventName, Content content)
    */
-  void addAction(EventName eventName, actionMethod<EventName, Content> method);
+  template<typename EventName, typename Content>
+  void addAction(EventName eventName, actionMethod<Content> method);
 
   /**
    * @brief method called by the #Observed when an event is send
@@ -76,8 +77,9 @@ public:
    * @param observed the source of the event
    * @note do not call this method, it's called automatically by #Observed
    */
+  template<class EventName, class Content>
   void doEventActions(EventName eventName, Content content,
-             Observed<EventName, Content> const& observed) const;
+             Observed const& observed) const;
 private:
 
 //=====================>Getters&Setters<======================
@@ -87,5 +89,11 @@ private:
 
 };
 
-#include "Observer.cpp"
+template<class EventName, class Content>
+inline Observer::Observer() :
+    actions(std::map<EventName, Content>())
+{
+
+}
+
 #endif

@@ -6,9 +6,9 @@
  *  @date 11 nov. 2017
  *  @author nihil
  */
-#ifdef OBSERVER_HPP
 #include <iostream>
 #include <typeinfo>
+#include "Observer.hpp"
 
 //------------------------------------------------------------
 //========================>Constants<=========================
@@ -22,15 +22,15 @@
 //=========================>Methods<==========================
 //------------------------------------------------------------
 template<class EventName, class Content>
-void Observer<EventName, Content>::addAction(EventName eventName,
-    actionMethod<EventName, Content> method)
+void Observer::addAction(EventName eventName,
+    actionMethod<Content> method)
 {
   actions.insert(std::make_pair(eventName, method));
 }
 
 template<class EventName, class Content>
-void Observer<EventName, Content>::doEventActions(EventName eventName, Content content,
-    Observed<EventName, Content> const& observed) const
+void Observer::doEventActions(EventName eventName, Content content,
+    Observed const& observed) const
 {
   using namespace std;
   auto actionsForEvent = actions.equal_range(eventName);
@@ -42,5 +42,3 @@ void Observer<EventName, Content>::doEventActions(EventName eventName, Content c
 //------------------------------------------------------------
 //=====================>Getters&Setters<======================
 //------------------------------------------------------------
-
-#endif
