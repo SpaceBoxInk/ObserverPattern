@@ -104,6 +104,19 @@ private:
 
 };
 
+template<class EventName, class Content>
+void Observed::notifyObserver(EventName eventName, Content content)
+{
+  if (hasChanged())
+  {
+    for (Observer const* obs : observers)
+    {
+      obs->doEventActions(eventName, content, *this);
+    }
+  }
+  clearChanged();
+}
+
 inline void Observed::addObserver(Observer const* observer)
 {
   observers.push_back(observer);
@@ -118,7 +131,6 @@ inline int Observed::countObservers() const
 {
   return observers.size();
 }
-
 
 //------------------------------------------------------------
 //=====================>Getters&Setters<======================

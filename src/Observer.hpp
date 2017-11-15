@@ -10,8 +10,13 @@
 #ifndef OBSERVER_HPP
 #define OBSERVER_HPP
 
-#include <map>
+#include <any>
+#include <cxxabi.h>
+#include <iomanip>
 #include <functional>
+#include <vector>
+#include <sstream>
+#include <type_traits>
 
 class Observed;
 
@@ -28,7 +33,73 @@ class Observed;
  * @endcode
  */
 template<class Content>
-using actionMethod = std::function<void(Content const&, Observed const&)>;
+using EventAction = std::function<void(Content const&, Observed const&)>;
+
+template<class T>
+bool operator==(std::any l, T r)
+{
+  try
+  {
+    if (std::is_pointer<T>::value)
+    {
+      return *r == *std::any_cast<T>(l);
+    }
+    else
+    {
+      return r == std::any_cast<T>(l);
+    }
+  }
+  catch (std::bad_any_cast& e)
+  {
+    return false;
+  }
+}
+
+template<class T>
+bool operator!=(std::any l, T r)
+{
+  return !(l == r);
+}
+
+/**
+ * @class BadActionMethod
+ * when the type of the eventName in #Observer::addAction(EventName eventName, EventAction<Content> method) for
+ * #EventAction
+ * @code
+ * EventAction aka { void(Content const&, Observed const&) }
+ * @endcode
+ * and for the type of eventName in Observed#notifyObserver(EventName eventName, Content content)
+ * is mismatch
+ */
+class BadActionMethod : public std::exception
+{
+private:
+  char* msg;
+public:
+  BadActionMethod(char const * typeNameNotObs, char const * typeNameAddAct)
+  {
+    std::stringstream msgT;
+    int status = -4;
+    msgT << "Type EventAction in notifyObserver and in addAction mismatch,\n"
+        "notifyObserver is sending :"
+        << abi::__cxa_demangle(typeNameNotObs, nullptr, nullptr, &status)
+        << ": and addAction specify a :"
+        << abi::__cxa_demangle(typeNameAddAct, nullptr, nullptr, &status) << ":\n"
+        << "And EventAction must have signature : void(Content const&, Observed const&)\n";
+    msg = new char[msgT.str().size()];
+    sprintf(msg, msgT.str().c_str());
+  }
+
+  ~BadActionMethod()
+  {
+    delete[] msg;
+  }
+
+  virtual char const* what() const noexcept
+  {
+    return msg;
+  }
+};
 
 /**
  * @class Observer
@@ -47,12 +118,11 @@ private:
   /**
    * @brief the list of actions handle by event name
    */
-  std::multimap actions;
+  std::vector<std::any> names;
+  std::vector<std::any> actions;
 //=======================>Constructors<=======================
 public:
-
-  template<class EventName, class Content>
-  Observer();
+  Observer() = default;
   // TODO: rule of five ? copyandswap
   virtual ~Observer() = default;
 
@@ -66,8 +136,8 @@ public:
    * @param method the event behavior, the method/lambda defined for a specific event
    * @see Observed::notifyObserver(EventName eventName, Content content)
    */
-  template<typename EventName, typename Content>
-  void addAction(EventName eventName, actionMethod<Content> method);
+  template<class EventName, class Content>
+  void addAction(EventName eventName, EventAction<Content> method);
 
   /**
    * @brief method called by the #Observed when an event is send
@@ -78,8 +148,7 @@ public:
    * @note do not call this method, it's called automatically by #Observed
    */
   template<class EventName, class Content>
-  void doEventActions(EventName eventName, Content content,
-             Observed const& observed) const;
+  void doEventActions(EventName eventName, Content content, Observed const& observed) const;
 private:
 
 //=====================>Getters&Setters<======================
@@ -89,11 +158,5 @@ private:
 
 };
 
-template<class EventName, class Content>
-inline Observer::Observer() :
-    actions(std::map<EventName, Content>())
-{
-
-}
-
+#include "Observer.cpp"
 #endif

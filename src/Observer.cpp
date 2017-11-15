@@ -8,8 +8,9 @@
  */
 #include <iostream>
 #include <typeinfo>
-#include "Observer.hpp"
+#include <any>
 
+#ifdef OBSERVER_HPP
 //------------------------------------------------------------
 //========================>Constants<=========================
 //------------------------------------------------------------
@@ -23,9 +24,11 @@
 //------------------------------------------------------------
 template<class EventName, class Content>
 void Observer::addAction(EventName eventName,
-    actionMethod<Content> method)
+    EventAction<Content> actionMethod)
 {
-  actions.insert(std::make_pair(eventName, method));
+  using namespace std;
+  names.push_back(eventName);
+  actions.push_back(actionMethod);
 }
 
 template<class EventName, class Content>
@@ -33,12 +36,24 @@ void Observer::doEventActions(EventName eventName, Content content,
     Observed const& observed) const
 {
   using namespace std;
-  auto actionsForEvent = actions.equal_range(eventName);
-  for (auto i = actionsForEvent.first; i != actionsForEvent.second; ++i)
+  for (uint i = 0; i < names.size(); ++i)
   {
-    i->second(content, observed);
+    if (names[i] == eventName)
+    {
+      try
+      {
+        auto f = any_cast<EventAction<Content>>(actions[i]);
+        f(content, observed);
+      }
+      catch (std::bad_any_cast& e)
+      {
+        throw BadActionMethod(typeid(Content).name(), names[i].type().name());
+      }
+    }
   }
 }
 //------------------------------------------------------------
 //=====================>Getters&Setters<======================
 //------------------------------------------------------------
+
+#endif // OBSERVER_HPP

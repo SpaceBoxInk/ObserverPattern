@@ -16,7 +16,8 @@
 //------------------------------------------------------------
 //=======================>Constructors<=======================
 //------------------------------------------------------------
-Observed::Observed(): changed(false)
+Observed::Observed() :
+    changed(false)
 {
 }
 
@@ -24,24 +25,8 @@ Observed::Observed(): changed(false)
 //=========================>Methods<==========================
 //------------------------------------------------------------
 
-
 void Observed::deleteObservers()
 {
   observers.clear();
-}
-
-
-template<class EventName, class Content>
-void Observed::notifyObserver(EventName eventName,
-    Content content)
-{
-  if (hasChanged())
-  {
-    for (Observer const* obs : observers)
-    {
-      obs->doEventActions(eventName, content, *this);
-    }
-  }
-  clearChanged();
 }
 
