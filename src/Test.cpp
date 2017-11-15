@@ -10,10 +10,11 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <exception>
 
 using namespace std;
 
-class TestObserved : public Observed<string, string>
+class TestObserved : public Observed
 {
 private:
   bool shown;
@@ -34,7 +35,7 @@ public:
     // say that the object state has changed
     setChanged();
     // and then notify observers with the event name : "Test" and content key
-    notifyObserver("Test", key);
+    notifyObserver(string("Test"), key);
 
     doOtherIhmStuff();
   }
@@ -58,7 +59,7 @@ public:
   }
 };
 
-class TestObserver : public Observer<string, string>
+class TestObserver : public Observer
 {
 private:
   TestObserved vTest;
@@ -70,7 +71,7 @@ public:
    */
   auto eventTest()
   {
-    return [](string const& content, Observed<string, string> const& observed) -> void
+    return [](string const& content, Observed const& observed) -> void
     {
       cout <<"Message : " << content << " from object : ";
       cout << typeid(observed).name() << " recieved !" << endl;
@@ -82,15 +83,15 @@ public:
   {
     vTest.addObserver(this);
     // call the function returning the lambda
-    addAction("Test", eventTest());
+    addAction<string, string>(string("Test"), eventTest());
 
     // or use directly a lambda function
-    addAction("Test2",
-              [](string const& content, Observed<string, string> const& observed) -> void
-              {
-                cout <<"Message : " << content << " from object : ";
-                cout << typeid(observed).name() << " recieved !" << endl;
-              });
+    addAction<string, string>("Test2",
+                              [](string const& content, Observed const& observed) -> void
+                              {
+                                cout <<"Message : " << content << " from object : ";
+                                cout << typeid(observed).name() << " recieved !" << endl;
+                              });
 
     vTest.show();
   }
