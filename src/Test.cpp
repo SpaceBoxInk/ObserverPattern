@@ -34,7 +34,7 @@ public:
     // say that the object state has changed
     setChanged();
     // and then notify observers with the event name : "Test" and content key
-    notifyObserver(new string("Test"), 1);
+    notifyObserver(string("Test"), key);
 
     doOtherIhmStuff();
   }
@@ -82,7 +82,7 @@ public:
   {
     vTest.addObserver(this);
     // call the function returning the lambda
-    addAction<string*, string>(new string("Test"), eventTest());
+    addAction<string, string>(string("Test"), eventTest());
 
     // or use directly a lambda function
     addAction<string, string>("Test2",

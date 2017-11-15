@@ -47,7 +47,7 @@ void Observer::doEventActions(EventName eventName, Content content,
       }
       catch (std::bad_any_cast& e)
       {
-        throw BadActionMethod(typeid(Content).name(), names[i].type().name());
+        throw BadActionMethod(typeid(Content).name(), actions[i].type().name());
       }
     }
   }

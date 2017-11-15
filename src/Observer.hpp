@@ -40,7 +40,7 @@ bool operator==(std::any l, T r)
 {
   try
   {
-    if (std::is_pointer<T>::value)
+  if constexpr(std::is_pointer<T>::value)
     {
       return *r == *std::any_cast<T>(l);
     }
@@ -63,13 +63,13 @@ bool operator!=(std::any l, T r)
 
 /**
  * @class BadActionMethod
- * when the type of the eventName in #Observer::addAction(EventName eventName, EventAction<Content> method) for
+ * when the type of the content in #Observer::addAction(EventName eventName, EventAction<Content> method) for
  * #EventAction
  * @code
  * EventAction aka { void(Content const&, Observed const&) }
  * @endcode
- * and for the type of eventName in Observed#notifyObserver(EventName eventName, Content content)
- * is mismatch
+ * and for the type of content in Observed#notifyObserver(EventName eventName, Content content)
+ * mismatch
  */
 class BadActionMethod : public std::exception
 {
@@ -80,12 +80,13 @@ public:
   {
     std::stringstream msgT;
     int status = -4;
-    msgT << "Type EventAction in notifyObserver and in addAction mismatch,\n"
-        "notifyObserver is sending :"
+  msgT << "Type Content in notifyObserver and in addAction<Content> mismatch,\n\n"
+      "notifyObserver is sending : "
         << abi::__cxa_demangle(typeNameNotObs, nullptr, nullptr, &status)
-        << ": and addAction specify a :"
-        << abi::__cxa_demangle(typeNameAddAct, nullptr, nullptr, &status) << ":\n"
-        << "And EventAction must have signature : void(Content const&, Observed const&)\n";
+      << "\naddAction specify :"
+      << abi::__cxa_demangle(typeNameAddAct, nullptr, nullptr, &status) << "\n\n"
+      << "And EventAction must have signature : void(Content const&, Observed const&)\n";
+
     msg = new char[msgT.str().size()];
     sprintf(msg, msgT.str().c_str());
   }
