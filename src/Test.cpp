@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <exception>
 
 using namespace std;
 
@@ -99,5 +100,5 @@ public:
 
 int main()
 {
-  TestObserver();
+    TestObserver();
 }
