@@ -100,5 +100,5 @@ public:
 
 int main()
 {
-    TestObserver();
+  TestObserver();
 }
