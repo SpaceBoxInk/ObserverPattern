@@ -33,7 +33,7 @@ class Observed;
  * @endcode
  */
 template<class Content>
-using EventAction = std::function<void(Content const&, Observed const&)>;
+using EventAction = std::function<void(Content, Observed const&)>;
 
 template<class T>
 bool operator==(std::any l, T r)

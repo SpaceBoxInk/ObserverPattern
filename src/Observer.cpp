@@ -42,7 +42,7 @@ void Observer::doEventActions(EventName eventName, Content content,
     {
       try
       {
-        auto const& f = any_cast<EventAction<Content const&>>(actions[i]);
+        auto const& f = any_cast<EventAction<Content>>(actions[i]);
         f(content, observed);
       }
       catch (std::bad_any_cast& e)
