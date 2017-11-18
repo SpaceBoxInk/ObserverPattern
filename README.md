@@ -16,8 +16,9 @@ just put the 4 files (Observed and Observer) in your project and compile with -s
 1. Subclass Observer and Observed where you want
 2. In Observer call `addObserver(Observer)` on your Observed
 3. Define your action related to an event with `addAction<EventNameType, ContentType>(eventName, eventMethod)`
+eg : `auto eventMethod = [](EventName eventName, Observer const& obs){}`
 4. In Observed say you changed `setChanged()`
-5. and finally send your event `notifyObservers(eventName, )`
+5. and finally send your event `notifyObservers(eventName, content)`
 
 Pay attention to the Type of your eventName, it must be the exact same Type !!
 
@@ -60,7 +61,7 @@ public:
     // say that the object state has changed
     setChanged();
     // and then notify observers with the event name : "eventExemple1" and content : key
-    notifyObserver(std::string("eventExemple1"), key);
+    notifyObservers(std::string("eventExemple1"), key);
 
     doOtherIhmStuff();
   }
@@ -75,7 +76,7 @@ public:
     {
       setChanged();
     }
-    notifyObserver(std::string("eventExemple2"), "other Ihm input");
+    notifyObservers(std::string("eventExemple2"), "other Ihm input");
   }
 
   bool isShown()
