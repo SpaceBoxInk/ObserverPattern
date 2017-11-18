@@ -12,45 +12,42 @@
 #include <vector>
 #include <exception>
 
-using namespace std;
-
-class TestObserved : public Observed
+class ExempleObserved : public Observed
 {
 private:
   bool shown;
 public:
 
-  TestObserved() :
+  ExempleObserved() :
       shown(false)
   {
-
   }
 
   void show()
   {
     shown = true;
-    cout << "IHM stuff and waiting for input :" << endl;
-    string key;
-    std::getline(cin, key);
+    std::cout << "IHM stuff and waiting for input :" << '\n';
+    std::string key;
+    std::getline(std::cin, key);
     // say that the object state has changed
     setChanged();
-    // and then notify observers with the event name : "Test" and content key
-    notifyObserver(string("Test"), key);
+    // and then notify observers with the event name : "eventExemple1" and content : key
+    notifyObservers(std::string("eventExemple1"), key);
 
     doOtherIhmStuff();
   }
 
   /**
-   * another test to send event
+   * another test to send an event
    */
   void doOtherIhmStuff()
   {
-    cout << "Other IHM stuff" << endl;
+    std::cout << "Other IHM stuff" << '\n';
     if (isShown())
     {
       setChanged();
     }
-    notifyObserver("Test2", "other Ihm input");
+    notifyObservers("eventExemple2", "other Ihm input");
   }
 
   bool isShown()
@@ -59,46 +56,52 @@ public:
   }
 };
 
-class TestObserver : public Observer
+class ExempleObserver : public Observer
 {
 private:
-  TestObserved vTest;
+  ExempleObserved vTest;
 public:
-  // Make a function that return a lambda
+  // a function that return a lambda
   /**
-   * Make a function that return a lambda
+   * a function that return a lambda
    * @return the lambda for event "Test"
    */
   auto eventTest()
   {
-    return [](string const& content, Observed const& observed) -> void
+    return [](std::string const& content, Observed const& observed) -> void
     {
-      cout <<"Message : " << content << " from object : ";
-      cout << typeid(observed).name() << " recieved !" << endl;
+      std::cout <<"Message : " << content << " from object : ";
+      std::cout << typeid(observed).name() << " recieved !" << '\n';
     };
   }
 
-  TestObserver() :
+  ExempleObserver() :
       vTest()
   {
+    // add this Observer to the subscribe list of vTest (the Observed)
     vTest.addObserver(this);
-    // call the function returning the lambda
-    addAction<string, string>(string("Test"), eventTest());
 
-    // or use directly a lambda function
-    addAction<string, string>("Test2",
-                              [](string const& content, Observed const& observed) -> void
-                              {
-                                cout <<"Message : " << content << " from object : ";
-                                cout << typeid(observed).name() << " recieved !" << endl;
-                              });
+    // call the function eventTest that returns the lambda
+    // and pass it to addAction
+    // <nameEvent Type, content type>
+    // ~~~~~~~vvvvvvvvvvvvvv~~~~~~~~~
+    addAction<std::string, std::string>(std::string("eventExemple1"), eventTest());
+
+    // or pass directly a lambda function
+    addAction<std::string, std::string>(
+        "eventExemple2", [](std::string const& content, Observed const& observed) -> void
+        {
+          std::cout <<"Message : " << content << " from object : ";
+          std::cout << typeid(observed).name() << " recieved !" << '\n';
+        });
 
     vTest.show();
   }
 
 };
 
+// launch app
 int main()
 {
-  TestObserver();
+  ExempleObserver();
 }
