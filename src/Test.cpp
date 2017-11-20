@@ -47,12 +47,13 @@ public:
     {
       setChanged();
     }
-    notifyObservers("eventExemple2", "other Ihm input");
+    // without content
+    notifyObservers("eventExemple2");
   }
 
   bool isShown()
   {
-    return bool();
+    return shown;
   }
 };
 
@@ -71,7 +72,7 @@ public:
     return [](std::string const& content, Observed const& observed) -> void
     {
       std::cout <<"Message : " << content << " from object : ";
-      std::cout << typeid(observed).name() << " recieved !" << '\n';
+      std::cout << typeid(observed).name() << " Received !" << '\n';
     };
   }
 
@@ -88,12 +89,12 @@ public:
     addAction<std::string, std::string>(std::string("eventExemple1"), eventTest());
 
     // or pass directly a lambda function
-    addAction<std::string, std::string>(
-        "eventExemple2", [](std::string const& content, Observed const& observed) -> void
-        {
-          std::cout <<"Message : " << content << " from object : ";
-          std::cout << typeid(observed).name() << " recieved !" << '\n';
-        });
+    // here we do not need content
+    addAction("eventExemple2", [](Observed const& observed) -> void
+    {
+      std::cout <<"Message eventExemple2 without content : " << " from object : ";
+      std::cout << typeid(observed).name() << " recieved !" << '\n';
+    });
 
     vTest.show();
   }

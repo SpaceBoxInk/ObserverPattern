@@ -21,11 +21,11 @@ class Observed;
 
 /**
  * @brief alias for event function signature <br>
- * @code void(Content const&, Observed<Content, EventName> const&) @endcode
+ * @code void(Content, Observed const&) @endcode
  *
  * with lambda :
  * @code
- * auto action1 = [](Content const& content, Observed<Content, EventName> const& Obs)
+ * auto action1 = [](Content content, Observed const& obs)
  * {
  *  std::cout << content;
  * };
@@ -33,6 +33,20 @@ class Observed;
  */
 template<class Content>
 using EventAction = std::function<void(Content, Observed const&)>;
+
+/**
+ * @brief alias for event without content function signature <br>
+ * @code void(Observed const&) @endcode
+ *
+ * with lambda :
+ * @code
+ * auto action1 = [](Observed const& obs)
+ * {
+ *  std::cout << typeid(obs).name();
+ * };
+ * @endcode
+ */
+using SingleEventAction = std::function<void(Observed const&)>;
 
 namespace opAny
 {
