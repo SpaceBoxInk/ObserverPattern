@@ -12,6 +12,8 @@
 
 #include "Observer.hpp"
 
+#include <algorithm>
+#include <iterator>
 #include <vector>
 
 /**
